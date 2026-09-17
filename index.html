@@ -686,6 +686,9 @@
         }
 
         .shop-toolbar {
+            position: relative;
+            z-index: 1000;
+            overflow: visible;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -729,6 +732,9 @@
         }
 
         .filters {
+            position: relative;
+            z-index: 1001;
+            overflow: visible;
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
@@ -749,6 +755,90 @@
             border-color: var(--white);
             background: var(--white);
             color: var(--black);
+        }
+
+        /* =========================================================
+           SUBMENU DOS FILTROS
+        ========================================================== */
+
+        .filter-group {
+            position: relative;
+        }
+
+        .filter-group > .filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-group.has-submenu > .filter-btn::after {
+            content: "⌄";
+            font-size: 0.75rem;
+            line-height: 1;
+            transition: transform 0.2s ease;
+        }
+
+        .filter-group.has-submenu:hover > .filter-btn::after,
+        .filter-group.has-submenu.open > .filter-btn::after {
+            transform: rotate(180deg);
+        }
+
+        .filter-submenu {
+            position: absolute;
+            z-index: 100;
+            top: calc(100% + 6px);
+            left: 0;
+            min-width: 230px;
+            padding: 7px;
+            border: 1px solid var(--border);
+            background: #101010;
+            box-shadow: 0 18px 45px rgba(0,0,0,0.45);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-5px);
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+        }
+
+        .filter-group:hover .filter-submenu,
+        .filter-group.open .filter-submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .filter-submenu button {
+            display: block;
+            width: 100%;
+            padding: 11px 13px;
+            border: 0;
+            background: transparent;
+            color: var(--gray-light);
+            text-align: left;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-submenu button:hover,
+        .filter-submenu button.active {
+            background: var(--white);
+            color: var(--black);
+        }
+
+        @media (max-width: 520px) {
+            .filter-group {
+                flex-shrink: 0;
+            }
+
+            .filter-submenu {
+                position: fixed;
+                left: 14px;
+                right: 14px;
+                top: auto;
+                min-width: 0;
+                max-height: 60vh;
+                overflow-y: auto;
+            }
         }
 
         .products-grid {
@@ -1075,25 +1165,16 @@
             position: relative;
             overflow: hidden;
             min-height: 400px;
-            background:
-                radial-gradient(
-                    circle at 50% 45%,
-                    #777 0,
-                    #303030 24%,
-                    #0b0b0b 65%
-                );
+            background: #0b0b0b;
         }
 
-        .promotion-visual::before {
-            content: "SALE";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            color: rgba(255,255,255,0.08);
-            font-family: "Playfair Display", serif;
-            font-size: clamp(5rem, 12vw, 10rem);
-            font-weight: 700;
-            transform: translate(-50%, -50%) rotate(-8deg);
+        .promotion-visual img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            object-fit: cover;
+            object-position: center;
         }
 
         /* =========================================================
@@ -1489,6 +1570,7 @@
 
             .filters {
                 overflow-x: auto;
+                overflow-y: visible;
                 flex-wrap: nowrap;
                 padding-bottom: 5px;
             }
@@ -1571,14 +1653,14 @@
                     </li>
 
                     <li>
-                        <a href="#produtos">
-                            Produtos
+                        <a href="#promocoes">
+                            Promoções
                         </a>
                     </li>
 
                     <li>
-                        <a href="#promocoes">
-                            Promoções
+                        <a href="#produtos">
+                            Produtos
                         </a>
                     </li>
 
@@ -1737,6 +1819,69 @@
         ====================================================== -->
 
         <section
+            class="section promotions-section"
+            id="promocoes"
+        >
+
+            <div class="container">
+
+                <div class="section-header reveal">
+
+                    <span class="eyebrow">
+                        Ofertas
+                    </span>
+
+                    <h2 class="section-title">
+                        Promoções
+                    </h2>
+
+                    <p class="section-description">
+                        Aproveite nossas ofertas por tempo limitado.
+                    </p>
+
+                </div>
+
+
+                <div class="promotion-highlight reveal">
+
+                    <div class="promotion-copy">
+
+                        <h3>
+                            Preços especiais para você.
+                        </h3>
+
+                        <p>
+                            Confira os produtos selecionados com condições
+                            especiais. Não deixe para depois.
+                        </p>
+
+                        <a
+                            href="#produtos"
+                            class="btn"
+                            onclick="currentCategory = 'Promoções'; renderFilters(); renderProducts();"
+                        >
+                            Ver ofertas
+                        </a>
+
+                    </div>
+
+                    <div class="promotion-visual">
+                        <img
+                            id="promotionBannerImage"
+                            src="imagens/logo.png"
+                            alt="Campanha promocional"
+                            onerror="this.onerror=null; this.src=STORE.logo;"
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section
             class="section products-section"
             id="produtos"
         >
@@ -1830,60 +1975,7 @@
              PROMOÇÕES
         ====================================================== -->
 
-        <section
-            class="section promotions-section"
-            id="promocoes"
-        >
-
-            <div class="container">
-
-                <div class="section-header reveal">
-
-                    <span class="eyebrow">
-                        Ofertas
-                    </span>
-
-                    <h2 class="section-title">
-                        Promoções
-                    </h2>
-
-                    <p class="section-description">
-                        Aproveite nossas ofertas por tempo limitado.
-                    </p>
-
-                </div>
-
-
-                <div class="promotion-highlight reveal">
-
-                    <div class="promotion-copy">
-
-                        <h3>
-                            Preços especiais para você.
-                        </h3>
-
-                        <p>
-                            Confira os produtos selecionados com condições
-                            especiais. Não deixe para depois.
-                        </p>
-
-                        <a
-                            href="#produtos"
-                            class="btn"
-                            onclick="currentCategory = 'Promoções'; renderFilters(); renderProducts();"
-                        >
-                            Ver ofertas
-                        </a>
-
-                    </div>
-
-                    <div class="promotion-visual"></div>
-
-                </div>
-
-            </div>
-
-        </section>
+        
 
 
         <!-- =====================================================
@@ -2234,6 +2326,44 @@
             email: "contato@nobre.com"
 
         };
+
+        /* =========================================================
+           BANNER DE CAMPANHA - ALTERE SOMENTE AQUI
+
+           Para trocar a campanha, altere imagem, titulo e descricao.
+           Exemplos de imagem:
+             imagens/natal.jpg
+             imagens/ano-novo.jpg
+             imagens/dia-dos-pais.jpg
+             imagens/black-friday.jpg
+
+           Basta colocar a nova arte dentro da pasta "imagens".
+        ========================================================== */
+
+        const promotionBanner = {
+            imagem: "imagens/logo.png",
+            titulo: "Preços especiais para você.",
+            descricao: "Confira os produtos selecionados com condições especiais. Não deixe para depois."
+        };
+
+        function renderPromotionBanner() {
+            const image = document.getElementById("promotionBannerImage");
+            const title = document.querySelector(".promotion-copy h3");
+            const description = document.querySelector(".promotion-copy p");
+
+            if (image) {
+                image.src = promotionBanner.imagem;
+                image.alt = promotionBanner.titulo;
+                image.onerror = function () {
+                    this.onerror = null;
+                    this.src = STORE.logo;
+                };
+            }
+
+            if (title) title.textContent = promotionBanner.titulo;
+            if (description) description.textContent = promotionBanner.descricao;
+        }
+
 
         /* =========================================================
            PRODUTOS - GRAVATAS BASIC SLIM - 6CM
@@ -2861,7 +2991,6 @@
                 disponivel: true
             },
 
-
         /* =========================================================
            GRAVATAS GABBANI
         ========================================================== */
@@ -2881,7 +3010,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani01_6cm.jpg",
 
@@ -2889,6 +3018,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 2,
@@ -2905,7 +3035,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani02_6cm.jpg",
 
@@ -2914,6 +3044,7 @@
                 disponivel: true
             },
             
+
             {
                 id: 3,
 
@@ -2929,7 +3060,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani03_6cm.jpg",
 
@@ -2937,6 +3068,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 4,
@@ -2953,7 +3085,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani04_6cm.jpg",
 
@@ -2961,6 +3093,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 5,
@@ -2977,7 +3110,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani05_6cm.jpg",
 
@@ -2985,6 +3118,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 6,
@@ -3001,7 +3135,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani06_6cm.jpg",
 
@@ -3009,6 +3143,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 7,
@@ -3025,7 +3160,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani07_6cm.jpg",
 
@@ -3033,6 +3168,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 8,
@@ -3049,7 +3185,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani08_6cm.jpg",
 
@@ -3057,6 +3193,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 9,
@@ -3073,7 +3210,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani09_6cm.jpg",
 
@@ -3081,6 +3218,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 10,
@@ -3097,7 +3235,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani010_6cm.jpg",
 
@@ -3105,6 +3243,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 11,
@@ -3121,7 +3260,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani011_6cm.jpg",
 
@@ -3129,6 +3268,7 @@
 
                 disponivel: true
             },
+
 
             {
                 id: 12,
@@ -3145,7 +3285,7 @@
                 precoPromocional: 22.90,
                     estoque: 5,
 
-                categoria: "Gravatas Gabbani 2400 fios",
+                categoria: "Gravatas Gabbani",
 
                 imagem: "imagens/gravatagabbani012_6cm.jpg",
 
@@ -3153,6 +3293,719 @@
 
                 disponivel: true
             },
+
+
+        /* =========================================================
+           GRAVATAS BASIC 7CM
+        ========================================================== */
+
+            {
+                id: 1,
+
+                nome: "Gravata Basic Slim 001",
+
+                legenda: "Linha Basic Slim 7cm",
+
+                descricao:
+                    "900 fios - 100 % Poliester - largura 7cm",
+
+                preco: 21.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Basic 7cm",
+
+                imagem: "imagens/gravatabasic01_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 2,
+
+                nome: "Gravata Basic Slim 002",
+
+                legenda: "Linha Basic Slim 7cm",
+
+                descricao:
+                    "900 fios - 100 % Poliester - largura 7cm",
+
+                preco: 21.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Basic 7cm",
+
+                imagem: "imagens/gravatabasic02_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 3,
+
+                nome: "Gravata Basic Slim 003",
+
+                legenda: "Linha Basic Slim 7cm",
+
+                descricao:
+                    "900 fios - 100 % Poliester - largura 7cm",
+
+                preco: 21.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Basic 7cm",
+
+                imagem: "imagens/gravatabasic03_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 4,
+
+                nome: "Gravata Basic Slim 004",
+
+                legenda: "Linha Basic Slim 7cm",
+
+                descricao:
+                    "900 fios - 100 % Poliester - largura 7cm",
+
+                preco: 21.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Basic 7cm",
+
+                imagem: "imagens/gravatabasic04_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 5,
+
+                nome: "Gravata Basic Slim 005",
+
+                legenda: "Linha Basic Slim 7cm",
+
+                descricao:
+                    "900 fios - 100 % Poliester - largura 7cm",
+
+                preco: 21.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Basic 7cm",
+
+                imagem: "imagens/gravatabasic05_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 6,
+
+                nome: "Gravata Basic Slim 001",
+
+                legenda: "Linha Basic Slim 7cm",
+
+                descricao:
+                    "900 fios - 100 % Poliester - largura 7cm",
+
+                preco: 21.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Basic 7cm",
+
+                imagem: "imagens/gravatabasic06_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 7,
+
+                nome: "Gravata Basic Slim 001",
+
+                legenda: "Linha Basic Slim 7cm",
+
+                descricao:
+                    "900 fios - 100 % Poliester - largura 7cm",
+
+                preco: 21.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Basic 7cm",
+
+                imagem: "imagens/gravatabasic07_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 8,
+
+                nome: "Gravata Basic Slim 008",
+
+                legenda: "Linha Basic Slim 7cm",
+
+                descricao:
+                    "900 fios - 100 % Poliester - largura 7cm",
+
+                preco: 21.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Basic 7cm",
+
+                imagem: "imagens/gravatabasic08_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+        /* =========================================================
+           GRAVATAS EXCLUSIVE
+        ========================================================== */
+
+            {
+                id: 1,
+
+                nome: "Gravata Exclusive 001",
+
+                legenda: "Linha Exclusive",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 29.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Exclusive",
+
+                imagem: "imagens/gravataexclusive01_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 2,
+
+                nome: "Gravata Exclusive 002",
+
+                legenda: "Linha Exclusive",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 29.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Exclusive",
+
+                imagem: "imagens/gravataexclusive02_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 3,
+
+                nome: "Gravata Exclusive 003",
+
+                legenda: "Linha Exclusive",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 29.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Exclusive",
+
+                imagem: "imagens/gravataexclusive03_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 4,
+
+                nome: "Gravata Exclusive 004",
+
+                legenda: "Linha Exclusive",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 29.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Exclusive",
+
+                imagem: "imagens/gravataexclusive04_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 5,
+
+                nome: "Gravata Exclusive 005",
+
+                legenda: "Linha Exclusive",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 29.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Exclusive",
+
+                imagem: "imagens/gravataexclusive05_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 6,
+
+                nome: "Gravata Exclusive 006",
+
+                legenda: "Linha Exclusive",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 29.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Exclusive",
+
+                imagem: "imagens/gravataexclusive06_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 7,
+
+                nome: "Gravata Exclusive 007",
+
+                legenda: "Linha Exclusive",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 29.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Exclusive",
+
+                imagem: "imagens/gravataexclusive07_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 8,
+
+                nome: "Gravata Exclusive 008",
+
+                legenda: "Linha Exclusive",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 29.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Exclusive",
+
+                imagem: "imagens/gravataexclusive08_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+        /* =========================================================
+           GRAVATAS DELUXE
+        ========================================================== */
+
+            {
+                id: 1,
+
+                nome: "Gravata Deluxe 001",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe01_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 2,
+
+                nome: "Gravata Deluxe 002",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe02_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 3,
+
+                nome: "Gravata Deluxe 003",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe03_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 4,
+
+                nome: "Gravata Deluxe 004",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe04_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 5,
+
+                nome: "Gravata Deluxe 005",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe05_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 6,
+
+                nome: "Gravata Deluxe 006",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe06_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 7,
+
+                nome: "Gravata Deluxe 007",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe07_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 8,
+
+                nome: "Gravata Deluxe 008",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe08_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 9,
+
+                nome: "Gravata Deluxe 009",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe09_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 10,
+
+                nome: "Gravata Deluxe 010",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe010_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 11,
+
+                nome: "Gravata Deluxe 011",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe011_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
+
+            {
+                id: 12,
+
+                nome: "Gravata Deluxe 012",
+
+                legenda: "Linha Deluxe",
+
+                descricao:
+                    "2400 fios - 100% poliester - Largura 7cm",
+
+                preco: 37.90,
+
+                precoPromocional: 22.90,
+                    estoque: 5,
+
+                categoria: "Gravatas Deluxe",
+
+                imagem: "imagens/gravatadeluxe012_7cm.jpg",
+
+                promocao: false,
+
+                disponivel: true
+            },
+
 
         /* =========================================================
            CINTOS CATRACA PREMIUM
@@ -3673,56 +4526,169 @@
            FILTROS
         ========================================================== */
 
+        /* =========================================================
+           ESTRUTURA DOS FILTROS / MODELOS
+        ========================================================== */
+
+        const filterGroups = [
+            {
+                label: "Destaques",
+                value: "Destaques"
+            },
+
+            {
+                label: "Gravatas 5 - 6 CM",
+                value: "Gravatas 5 - 6 CM",
+                models: [
+                    {
+                        label: "Gravatas Basic | 6cm",
+                        value: "Gravatas Basic"
+                    },
+                    {
+                        label: "Gravatas Xadrez",
+                        value: "Gravatas Xadrez"
+                    },
+                    {
+                        label: "Gravatas Gabbani",
+                        value: "Gravatas Gabbani"
+                    }
+                ]
+            },
+
+            {
+                label: "Gravatas 7 CM",
+                value: "Gravatas 7 CM",
+                models: [
+                    {
+                        label: "Gravatas Basic | 7cm",
+                        value: "Gravatas Basic 7cm"
+                    },
+                    {
+                        label: "Gravatas Exclusive",
+                        value: "Gravatas Exclusive"
+                    },
+                    {
+                        label: "Gravatas Deluxe",
+                        value: "Gravatas Deluxe"
+                    }
+
+
+                ]
+            },
+
+            {
+                label: "Gravatas 8 - 9 CM",
+                value: "Gravatas 8 - 9 CM",
+                models: [
+                    {
+                        label: "Gravatas Toque de Seda",
+                        value: "s/g"
+                    }
+                ]
+            },
+
+            {
+                label: "Cintos",
+                value: "Cintos"
+            },
+
+            {
+                label: "Promoções",
+                value: "Promoções"
+            }
+        ];
+
+        function selectFilter(value) {
+            currentCategory = value;
+            renderFilters();
+            renderProducts();
+        }
+
         function renderFilters() {
-
-            const categories = [
-                "Destaques",
-
-                ...new Set(
-                    products
-                        .map(product => product.categoria)
-                        .filter(Boolean)
-                ),
-
-                "Promoções"
-            ];
 
             filtersContainer.innerHTML = "";
 
-            categories.forEach(category => {
+            filterGroups.forEach(group => {
 
-                const button =
-                    document.createElement("button");
+                const wrapper = document.createElement("div");
+                wrapper.className = "filter-group";
 
+                if (group.models?.length) {
+                    wrapper.classList.add("has-submenu");
+                }
+
+                const button = document.createElement("button");
+                button.type = "button";
                 button.className =
                     "filter-btn" +
                     (
-                        category === currentCategory
+                        currentCategory === group.value ||
+                        group.models?.some(model => model.value === currentCategory)
                             ? " active"
                             : ""
                     );
+                button.textContent = group.label;
 
-                button.textContent =
-                    category;
+                button.addEventListener("click", (event) => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                    event.stopPropagation();
 
-                        currentCategory =
-                            category;
+                    if (group.models?.length) {
 
-                        renderFilters();
-                        renderProducts();
+                        /* No celular, o primeiro clique abre o submenu.
+                           Se clicar novamente, seleciona a categoria inteira. */
+                        if (window.innerWidth <= 520 && !wrapper.classList.contains("open")) {
+                            document
+                                .querySelectorAll(".filter-group.open")
+                                .forEach(item => item.classList.remove("open"));
 
+                            wrapper.classList.add("open");
+                            return;
+                        }
                     }
-                );
 
-                filtersContainer.appendChild(button);
+                    selectFilter(group.value);
+                });
 
+                wrapper.appendChild(button);
+
+                if (group.models?.length) {
+
+                    const submenu = document.createElement("div");
+                    submenu.className = "filter-submenu";
+
+                    group.models.forEach(model => {
+
+                        const modelButton = document.createElement("button");
+                        modelButton.type = "button";
+                        modelButton.textContent = model.label;
+                        modelButton.className =
+                            currentCategory === model.value ? "active" : "";
+
+                        modelButton.addEventListener("click", (event) => {
+
+                            event.stopPropagation();
+                            selectFilter(model.value);
+                        });
+
+                        submenu.appendChild(modelButton);
+                    });
+
+                    wrapper.appendChild(submenu);
+                }
+
+                filtersContainer.appendChild(wrapper);
             });
-
         }
+
+
+        document.addEventListener("click", (event) => {
+            if (!event.target.closest(".filter-group")) {
+                document
+                    .querySelectorAll(".filter-group.open")
+                    .forEach(item => item.classList.remove("open"));
+            }
+        });
 
 
         /* =========================================================
@@ -3944,12 +4910,22 @@
                     }
 
 
+                    // Categorias principais usam os valores dos modelos/subcategorias.
+                    // Assim, o filtro geral não depende da descrição do produto.
+                    const currentGroup = filterGroups.find(
+                        group => group.value === currentCategory
+                    );
+
                     const matchesCategory =
                         currentCategory === "Destaques"
                             ? product.destaque === true
                             : currentCategory === "Promoções"
                                 ? product.promocao
-                                : product.categoria === currentCategory;
+                                : currentGroup?.models?.length
+                                    ? currentGroup.models.some(
+                                        model => model.value === product.categoria
+                                    )
+                                    : product.categoria === currentCategory;
 
 
                     const searchableText =
@@ -4294,6 +5270,8 @@
         /* =========================================================
            INICIALIZAÇÃO
         ========================================================== */
+
+        renderPromotionBanner();
 
         currentCategory = "Destaques";
 
