@@ -888,6 +888,17 @@
             }
         }
 
+        /* POSICIONAMENTO DEFINITIVO DO SUBMENU NO MOBILE */
+        @media (max-width: 900px) {
+            body > .filter-submenu {
+                position: fixed !important;
+                margin: 0 !important;
+                transform: none !important;
+                z-index: 99999 !important;
+                box-sizing: border-box !important;
+            }
+        }
+
         .products-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -4909,8 +4920,13 @@
 
                             const submenu = wrapper.querySelector(".filter-submenu");
                             if (submenu) {
-                                /* Espera a renderização para calcular a altura real
-                                   antes de posicionar o menu na tela. */
+                                /* No mobile, tira o submenu de dentro do container
+                                   dos filtros e coloca direto no body. Assim o
+                                   position: fixed usa a tela inteira e nunca o
+                                   centro/área do container como referência. */
+                                submenu.dataset.mobileDetached = "true";
+                                document.body.appendChild(submenu);
+
                                 requestAnimationFrame(() => {
                                     positionMobileSubmenu(wrapper, submenu);
                                 });
