@@ -865,40 +865,6 @@
             }
         }
 
-
-        /* SUBMENU MOBILE/TABLET: sempre preso ao botão tocado */
-        @media (max-width: 900px) {
-            .filter-submenu {
-                position: fixed;
-                z-index: 5000;
-                top: 0;
-                left: 0;
-                right: auto;
-                max-width: calc(100vw - 20px);
-                max-height: min(60vh, 420px);
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .filter-submenu button {
-                min-height: 48px;
-                padding: 13px 15px;
-                font-size: 0.92rem;
-                line-height: 1.25;
-            }
-        }
-
-        /* POSICIONAMENTO DEFINITIVO DO SUBMENU NO MOBILE */
-        @media (max-width: 900px) {
-            body > .filter-submenu {
-                position: fixed !important;
-                margin: 0 !important;
-                transform: none !important;
-                z-index: 99999 !important;
-                box-sizing: border-box !important;
-            }
-        }
-
         .products-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -4827,54 +4793,27 @@
         }
 
         function positionMobileSubmenu(wrapper, submenu) {
-            /* No celular/tablet, o submenu fica preso visualmente ao botão
-               que foi tocado, mesmo que os filtros estejam em rolagem horizontal. */
-            if (window.innerWidth > 900) return;
+            if (window.innerWidth > 520) return;
 
-            const button = wrapper.querySelector(".filter-btn");
-            if (!button) return;
+            const rect = wrapper.getBoundingClientRect();
+            const margin = 14;
+            const gap = 8;
+            const submenuWidth = Math.min(250, window.innerWidth - margin * 2);
 
-            const rect = button.getBoundingClientRect();
-            const margin = 10;
-            const gap = 6;
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-
-            /* Mede o menu sem deixar que ele ultrapasse a tela. */
-            const submenuWidth = Math.min(280, viewportWidth - margin * 2);
-            submenu.style.width = `${submenuWidth}px`;
-            submenu.style.minWidth = `${submenuWidth}px`;
-
-            const menuHeight = Math.min(
-                submenu.scrollHeight || 220,
-                Math.floor(viewportHeight * 0.60)
-            );
-
-            /* Começa exatamente abaixo do botão clicado. */
             let left = rect.left;
+            if (left + submenuWidth > window.innerWidth - margin) {
+                left = window.innerWidth - margin - submenuWidth;
+            }
+            left = Math.max(margin, left);
+
             let top = rect.bottom + gap;
-
-            /* Mantém o submenu inteiro dentro da tela horizontalmente. */
-            if (left + submenuWidth > viewportWidth - margin) {
-                left = viewportWidth - margin - submenuWidth;
-            }
-            if (left < margin) {
-                left = margin;
+            const maxTop = window.innerHeight - margin - Math.min(submenu.offsetHeight || 250, window.innerHeight * 0.6);
+            if (top > maxTop) {
+                top = Math.max(margin, rect.top - (submenu.offsetHeight || 250) - gap);
             }
 
-            /* Se não houver espaço embaixo, abre acima do botão,
-               mas continua alinhado ao local do clique. */
-            if (top + menuHeight > viewportHeight - margin) {
-                const aboveTop = rect.top - menuHeight - gap;
-                if (aboveTop >= margin) {
-                    top = aboveTop;
-                } else {
-                    top = Math.max(margin, viewportHeight - margin - menuHeight);
-                }
-            }
-
-            submenu.style.left = `${Math.round(left)}px`;
-            submenu.style.top = `${Math.round(top)}px`;
+            submenu.style.left = `${left}px`;
+            submenu.style.top = `${Math.max(margin, top)}px`;
             submenu.style.right = "auto";
         }
 
@@ -4911,7 +4850,7 @@
 
                         /* No celular, o primeiro clique abre o submenu.
                            Se clicar novamente, seleciona a categoria inteira. */
-                        if (window.innerWidth <= 900 && !wrapper.classList.contains("open")) {
+                        if (window.innerWidth <= 520 && !wrapper.classList.contains("open")) {
                             document
                                 .querySelectorAll(".filter-group.open")
                                 .forEach(item => item.classList.remove("open"));
@@ -4920,13 +4859,8 @@
 
                             const submenu = wrapper.querySelector(".filter-submenu");
                             if (submenu) {
-                                /* No mobile, tira o submenu de dentro do container
-                                   dos filtros e coloca direto no body. Assim o
-                                   position: fixed usa a tela inteira e nunca o
-                                   centro/área do container como referência. */
-                                submenu.dataset.mobileDetached = "true";
-                                document.body.appendChild(submenu);
-
+                                /* Espera a renderização para calcular a altura real
+                                   antes de posicionar o menu na tela. */
                                 requestAnimationFrame(() => {
                                     positionMobileSubmenu(wrapper, submenu);
                                 });
