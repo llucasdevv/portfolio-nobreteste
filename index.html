@@ -1440,6 +1440,96 @@
             transform: translateY(0);
         }
 
+
+        /* FORÇA O LAYOUT MOBILE EM CELULARES, MESMO QUANDO O NAVEGADOR
+           ESTIVER USANDO UM VIEWPORT CSS MAIOR QUE A LARGURA FÍSICA. */
+        body.mobile-device {
+            overflow-x: hidden;
+        }
+
+        body.mobile-device .products-grid,
+        body.mobile-device .products-carousel .products-grid {
+            grid-template-columns: 1fr !important;
+            gap: 18px;
+            overflow: visible;
+        }
+
+        body.mobile-device .products-carousel.is-active .products-grid {
+            display: flex;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body.mobile-device .products-carousel.is-active .product-card {
+            flex: 0 0 100% !important;
+            min-width: 100%;
+            scroll-snap-align: start;
+        }
+
+        body.mobile-device .product-image {
+            aspect-ratio: 1 / 1.05;
+        }
+
+        body.mobile-device .product-content {
+            padding: 20px;
+        }
+
+        body.mobile-device .product-name {
+            font-size: 1.65rem;
+            line-height: 1.08;
+        }
+
+        body.mobile-device .product-caption {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        body.mobile-device .product-price {
+            font-size: 1.35rem;
+        }
+
+        body.mobile-device .product-btn {
+            min-height: 48px;
+            font-size: 0.82rem;
+        }
+
+        body.mobile-device .filters {
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            flex-wrap: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        body.mobile-device .filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        body.mobile-device .filter-group {
+            flex: 0 0 auto;
+        }
+
+        body.mobile-device .filter-btn {
+            min-height: 48px;
+            padding: 0 16px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        body.mobile-device .filter-submenu {
+            z-index: 99999;
+        }
+
+        @media (max-width: 520px), (hover: none) and (pointer: coarse) {
+            body.mobile-device .container {
+                width: calc(100% - 28px);
+                max-width: none;
+            }
+        }
+
         /* =========================================================
            RESPONSIVIDADE
         ========================================================== */
@@ -1516,6 +1606,12 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
+            /* Em telas menores, esta regra precisa sobrescrever
+               .products-carousel .products-grid, que é mais específica. */
+            .products-carousel .products-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
             .products-carousel.is-active .product-card {
                 flex-basis: calc((100% - 18px) / 2);
             }
@@ -1584,6 +1680,12 @@
                 grid-template-columns: 1fr;
             }
 
+            /* No celular estreito, um card por linha para manter
+               texto, preço e botões grandes e fáceis de tocar. */
+            .products-carousel .products-grid {
+                grid-template-columns: 1fr;
+            }
+
             .products-carousel.is-active .product-card {
                 flex-basis: 100%;
             }
@@ -1640,6 +1742,22 @@
 </head>
 
 <body>
+
+    <script>
+        // Detecta celular/tablet por toque para evitar que o viewport do navegador
+        // faça o site aplicar o layout de desktop em uma tela pequena.
+        (function () {
+            const isTouchDevice =
+                window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches ||
+                navigator.maxTouchPoints > 0 ||
+                "ontouchstart" in window;
+
+            if (isTouchDevice) {
+                document.body.classList.add("mobile-device");
+            }
+        })();
+    </script>
+
 
     <!-- =========================================================
          HEADER
