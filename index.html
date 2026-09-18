@@ -830,14 +830,38 @@
                 flex-shrink: 0;
             }
 
+            /* Menu de modelos no celular:
+               fica grande, fácil de tocar e é posicionado via JS
+               para não ficar cortado pelo scroll horizontal dos filtros. */
             .filter-submenu {
                 position: fixed;
+                z-index: 5000;
                 left: 14px;
-                right: 14px;
-                top: auto;
-                min-width: 0;
-                max-height: 60vh;
+                right: auto;
+                top: 0;
+                min-width: 250px;
+                max-width: calc(100vw - 28px);
+                max-height: min(60vh, 420px);
                 overflow-y: auto;
+                padding: 8px;
+                border-radius: 10px;
+                box-shadow: 0 18px 45px rgba(0,0,0,0.6);
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .filter-submenu button {
+                min-height: 48px;
+                padding: 13px 15px;
+                font-size: 0.92rem;
+                line-height: 1.25;
+                border-radius: 6px;
+            }
+
+            .filter-btn {
+                min-height: 46px;
+                padding: 0 16px;
+                font-size: 0.86rem;
+                touch-action: manipulation;
             }
         }
 
@@ -4604,6 +4628,31 @@
             renderProducts();
         }
 
+        function positionMobileSubmenu(wrapper, submenu) {
+            if (window.innerWidth > 520) return;
+
+            const rect = wrapper.getBoundingClientRect();
+            const margin = 14;
+            const gap = 8;
+            const submenuWidth = Math.min(250, window.innerWidth - margin * 2);
+
+            let left = rect.left;
+            if (left + submenuWidth > window.innerWidth - margin) {
+                left = window.innerWidth - margin - submenuWidth;
+            }
+            left = Math.max(margin, left);
+
+            let top = rect.bottom + gap;
+            const maxTop = window.innerHeight - margin - Math.min(submenu.offsetHeight || 250, window.innerHeight * 0.6);
+            if (top > maxTop) {
+                top = Math.max(margin, rect.top - (submenu.offsetHeight || 250) - gap);
+            }
+
+            submenu.style.left = `${left}px`;
+            submenu.style.top = `${Math.max(margin, top)}px`;
+            submenu.style.right = "auto";
+        }
+
         function renderFilters() {
 
             filtersContainer.innerHTML = "";
@@ -4643,6 +4692,15 @@
                                 .forEach(item => item.classList.remove("open"));
 
                             wrapper.classList.add("open");
+
+                            const submenu = wrapper.querySelector(".filter-submenu");
+                            if (submenu) {
+                                /* Espera a renderização para calcular a altura real
+                                   antes de posicionar o menu na tela. */
+                                requestAnimationFrame(() => {
+                                    positionMobileSubmenu(wrapper, submenu);
+                                });
+                            }
                             return;
                         }
                     }
@@ -4689,6 +4747,21 @@
                     .forEach(item => item.classList.remove("open"));
             }
         });
+
+        /* Mantém o submenu no lugar correto ao girar a tela ou redimensionar. */
+        window.addEventListener("resize", () => {
+            document.querySelectorAll(".filter-group.open").forEach(wrapper => {
+                const submenu = wrapper.querySelector(".filter-submenu");
+                if (submenu) positionMobileSubmenu(wrapper, submenu);
+            });
+        });
+
+        window.addEventListener("scroll", () => {
+            document.querySelectorAll(".filter-group.open").forEach(wrapper => {
+                const submenu = wrapper.querySelector(".filter-submenu");
+                if (submenu) positionMobileSubmenu(wrapper, submenu);
+            });
+        }, { passive: true });
 
 
         /* =========================================================
