@@ -1449,9 +1449,19 @@
 
         body.mobile-device .products-grid,
         body.mobile-device .products-carousel .products-grid {
-            grid-template-columns: 1fr !important;
-            gap: 18px;
-            overflow: visible;
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            gap: 20px !important;
+            overflow: visible !important;
+        }
+
+        body.mobile-device .product-card {
+            width: 100% !important;
+            max-width: none !important;
+            min-width: 0 !important;
+            box-sizing: border-box;
         }
 
         body.mobile-device .products-carousel.is-active .products-grid {
@@ -1738,21 +1748,57 @@
 
         }
 
-    </style>
+    
+        /* CORREÇÃO RESPONSIVA DOS CARDS NO CELULAR */
+        @media (max-width: 1100px) {
+            .products-grid,
+            .products-carousel .products-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 18px !important;
+            }
+
+            .products-carousel.is-active .products-grid {
+                display: grid !important;
+                overflow: visible !important;
+            }
+
+            .products-carousel.is-active .product-card {
+                flex: none !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .products-grid,
+            .products-carousel .products-grid {
+                grid-template-columns: minmax(0, 1fr) !important;
+            }
+
+            .products-carousel.is-active .product-card {
+                width: 100% !important;
+            }
+        }
+</style>
 </head>
 
 <body>
 
     <script>
-        // Detecta celular/tablet por toque para evitar que o viewport do navegador
-        // faça o site aplicar o layout de desktop em uma tela pequena.
+        // Detecta celular/tablet mesmo quando o navegador usa um viewport CSS
+        // maior que a largura física da tela.
         (function () {
-            const isTouchDevice =
-                window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches ||
+            const touchDevice =
+                (window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches) ||
                 navigator.maxTouchPoints > 0 ||
                 "ontouchstart" in window;
 
-            if (isTouchDevice) {
+            const screenW = Number(window.screen && window.screen.width) || Infinity;
+            const screenH = Number(window.screen && window.screen.height) || Infinity;
+            const physicalMobile = Math.min(screenW, screenH) <= 800;
+            const mobileViewport = window.innerWidth <= 800 || touchDevice || physicalMobile;
+
+            if (mobileViewport) {
                 document.body.classList.add("mobile-device");
             }
         })();
@@ -4880,6 +4926,7 @@
                 if (submenu) positionMobileSubmenu(wrapper, submenu);
             });
         }, { passive: true });
+
 
 
         /* =========================================================
